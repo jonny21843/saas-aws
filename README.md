@@ -1,43 +1,46 @@
-# SaaS Consultation App (AWS Edition)
+# SaaS Consultation App (AWS Container Edition)
 
-![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black?style=flat-square&logo=next.js)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat-square&logo=amazon-aws&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black?style=for-the-badge&logo=next.js)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-A production-ready SaaS application featuring a Next.js frontend and a FastAPI backend, fully containerized for scalable deployment on AWS infrastructure (App Runner, ECS, or EC2).
+A robust, production-grade SaaS template designed for containerized environments. This version is optimized for AWS (App Runner, ECS, or Fargate) where you want a single unified container handling both your frontend and backend.
 
-## Architecture
-This project utilizes a multi-stage Docker build to optimize performance and security:
-* Build Stage: Compiles the Next.js frontend into a high-performance static export.
-* Runtime Stage: A slim Python environment running FastAPI that serves both the API logic and the static frontend assets.
+## 🧠 How It Works: The Unified Container
+Unlike traditional deployments that host the frontend and backend separately, this repo uses a Multi-Stage Docker build:
+1. Stage 1 (Build): The Next.js app is compiled into static HTML/JS/CSS assets (SSG).
+2. Stage 2 (Runtime): A Python/FastAPI server is initialized. It is configured to serve those static files at the root (/) while simultaneously handling dynamic API logic at (/api).
+3. Result: One single URL, one single container, and zero Cross-Origin (CORS) issues.
 
-## Getting Started
+## ✨ Key Features
+- High-Performance Frontend: Built with Next.js 16 and Tailwind CSS for a modern, responsive UI.
+- Secure Authentication: Integrated with Clerk for user management and protected routes.
+- Python Backend: FastAPI handles heavy lifting, database interactions, and business logic.
+- Cloud Ready: Platform-agnostic Docker configuration optimized for the linux/amd64 architecture.
 
-### Prerequisites
-* Docker Desktop installed
-* AWS CLI and AWS Tools for PowerShell configured
-* A Clerk account for user authentication
+## 📂 Project Structure
+- /api: Python FastAPI source code (routes, models, schemas).
+- /pages: Next.js frontend pages and components.
+- /public: Static assets (images, fonts).
+- Dockerfile: The automated build instructions for AWS deployment.
 
-### Environment Variables
-Create a .env file in the root directory and add:
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxxxxxxx
-CLERK_SECRET_KEY=sk_test_xxxxxxxx
+## 🚀 Local Setup & Build
 
-### Local Build & Execution
-To build the container (passing the public key as a build argument for the static export):
+1. Setup Environment Variables:
+Create a .env file with your Clerk keys:
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
 
-docker build --platform linux/amd64 --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your_clerk_key" -t consultation-app .
+2. Build the Docker Image:
+docker build --platform linux/amd64 --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your_key" -t saas-aws .
 
-docker run -p 8000:8000 consultation-app
+3. Run the Container:
+docker run -p 8000:8000 saas-aws
 
-## AWS Deployment (ECR)
-1. Login to ECR:
-(Get-ECRLoginCommand).Password | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com
-
-2. Tag and Push:
-docker tag consultation-app:latest <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/consultation-app:latest
-docker push <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/consultation-app:latest
+## ☁️ Deployment Path
+1. Push the built image to AWS ECR (Elastic Container Registry).
+2. Deploy via AWS App Runner for a managed experience, or AWS ECS for full control.
+3. Ensure the PORT environment variable is set to 8000 in your AWS console.
 
 ---
 Created by Jonathan Feagans
